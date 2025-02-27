@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Scalar.AspNetCore;
 using System;
-
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,11 +41,16 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowCORS",
-        builder =>
-            builder.WithOrigins("https://konohapj04.vercel.app/")
-                   .AllowAnyMethod()
-                   .AllowAnyHeader());       
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("https://konohapj04.vercel.app")
+            .AllowAnyMethod()
+            
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+
+        });
 });
 
 var app = builder.Build();
@@ -69,7 +74,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 app.UseHttpsRedirection();
-app.UseCors("AllowCORS");
+app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();
