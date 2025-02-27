@@ -42,11 +42,14 @@ var AllowAllOrigins = "_myAllowCors";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: AllowAllOrigins,
-        builder => builder
+        builder =>
+        {
+            builder
                           .WithOrigins("https://konohapj04.vercel.app/")
                           .AllowAnyMethod()
                           .AllowAnyHeader()
-                          .AllowCredentials());
+                          .AllowCredentials();
+                          });
                           
 });
 
