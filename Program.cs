@@ -38,19 +38,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Expiration = null;
     options.SlidingExpiration = false;
 });
-var AllowAllOrigins = "_myAllowCors";
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: AllowAllOrigins,
+    options.AddPolicy("AllowCORS",
         builder =>
-        {
-            builder
-                          .WithOrigins("https://konohapj04.vercel.app/")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
-                          });
-                          
+            builder.WithOrigins("https://konohapj04.vercel.app/")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader());       
 });
 
 var app = builder.Build();
@@ -74,7 +69,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 app.UseHttpsRedirection();
-app.UseCors(AllowAllOrigins);
+app.UseCors("AllowCORS");
 
 app.UseAuthentication();
 app.UseAuthorization();
