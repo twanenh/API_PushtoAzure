@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_PushtoAzure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250227064544_alo")]
+    [Migration("20250227070147_alo")]
     partial class alo
     {
         /// <inheritdoc />
