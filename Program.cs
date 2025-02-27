@@ -45,7 +45,8 @@ builder.Services.AddCors(options =>
         builder => builder
                           .WithOrigins("https://konohapj04.vercel.app/")
                           .AllowAnyMethod()
-                          .AllowAnyHeader());
+                          .AllowAnyHeader()
+                          .AllowCredentials());
                           
 });
 
