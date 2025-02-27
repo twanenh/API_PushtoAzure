@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
         builder => builder.AllowAnyOrigin()
-                          .WithOrigins("http://localhost:4200")
+                          .WithOrigins("https://konohapj04.vercel.app/")
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials());
