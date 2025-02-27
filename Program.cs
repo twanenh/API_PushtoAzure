@@ -16,23 +16,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Trước đây
-builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Thay bằng
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//if (builder.Environment.IsProduction())
-//{
-//    // Sử dụng MySQL trong môi trường production (Railway)
-//    builder.Services.AddDbContext<AppDbContext>(options =>
-//        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-//}
-//else
-//{
-//    // Tiếp tục sử dụng SQL Server trong môi trường development
-//    builder.Services.AddDbContext<AppDbContext>(options =>
-//        options.UseSqlServer(connectionString));
-//}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
