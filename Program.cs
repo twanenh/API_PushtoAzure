@@ -44,12 +44,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("https://tuanbeo.vercel.app")
-                  .WithOrigins("http://localhost:4200")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
-                  .AllowCredentials()
-                  .SetIsOriginAllowed(origin => true) // Thêm dòng này nếu cần debug
-                  .WithExposedHeaders("Content-Disposition"); // Thêm các header cần thiết
+                  .AllowCredentials();
         });
 });
 
@@ -61,6 +58,7 @@ var app = builder.Build();
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //}
+app.UseCors("AllowAngular");
 
 
 
@@ -74,7 +72,6 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 app.UseHttpsRedirection();
-app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();
