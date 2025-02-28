@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Scalar.AspNetCore;
 using System;
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,10 +43,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular",
         policy =>
         {
-            policy.WithOrigins("https://tuanbeo.vercel.app/")
+            policy.WithOrigins("https://tuanbeo.vercel.app")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
-                  .AllowCredentials();
+                  .AllowCredentials()
+                  .SetIsOriginAllowed(origin => true) // Thêm dòng này nếu cần debug
+                  .WithExposedHeaders("Content-Disposition"); // Thêm các header cần thiết
         });
 });
 
