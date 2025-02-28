@@ -44,12 +44,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular",
         policy =>
         {
-            policy.WithOrigins("https://konohapj04.vercel.app")
-            .AllowAnyMethod()
-            
+            policy.WithOrigins("https://tuanbeo.vercel.app/")
+                  .WithOrigins("http://localhost:4200")
+                  .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
-
         });
 });
 
