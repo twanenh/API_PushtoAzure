@@ -45,7 +45,6 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("https://tuanbeo.vercel.app/")
-                  .WithOrigins("http://localhost:4200")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
