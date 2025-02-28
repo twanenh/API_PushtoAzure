@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+//Trước 
 //builder.Services.AddDbContext<AppDbContext>(options =>
 //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -47,7 +47,8 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials()
-                  .WithExposedHeaders("Content-Disposition");
+                  .SetIsOriginAllowed(origin => true) // Thêm dòng này nếu cần debug
+                  .WithExposedHeaders("Content-Disposition"); // Thêm các header cần thiết
         });
 });
 
