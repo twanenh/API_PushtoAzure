@@ -31,15 +31,17 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromDays(7); // Cookie tồn tại 7 ngày
+    options.SlidingExpiration = true; // Gia hạn thời gian sống khi người dùng hoạt động
     options.LoginPath = "/api/auth/login";
     options.LogoutPath = "/api/auth/logout";
     options.AccessDeniedPath = "/api/auth/accessdenied";
+
     options.Cookie.HttpOnly = true;
-    options.SlidingExpiration = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
-    options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
-    options.Cookie.Name = ".AspNetCore.Identity.Application"; // Đặt tên giống như Postman nhận được
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Bắt buộc HTTPS
+    options.Cookie.SameSite = SameSiteMode.None; // Cho phép gửi từ domain khác
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
 });
+
 
 builder.Services.AddCors(options =>
 {
