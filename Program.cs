@@ -37,6 +37,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.Expiration = null;
     options.SlidingExpiration = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
+    options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
+    options.Cookie.Name = ".AspNetCore.Identity.Application"; // Đặt tên giống như Postman nhận được
 });
 
 builder.Services.AddCors(options =>
@@ -50,13 +53,6 @@ builder.Services.AddCors(options =>
                   .AllowAnyHeader()
                   .AllowCredentials();
         });
-});
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
-    options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
-    options.Cookie.Name = ".AspNetCore.Identity.Application"; // Đặt tên giống như Postman nhận được
 });
 
 var app = builder.Build();
