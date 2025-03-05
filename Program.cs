@@ -35,7 +35,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/api/auth/logout";
     options.AccessDeniedPath = "/api/auth/accessdenied";
     options.Cookie.HttpOnly = true;
-    options.Cookie.Expiration = null;
     options.SlidingExpiration = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
     options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
