@@ -30,12 +30,19 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Cookie tồn tại 7 ngày
     options.LoginPath = "/api/auth/login";
     options.LogoutPath = "/api/auth/logout";
     options.AccessDeniedPath = "/api/auth/accessdenied";
     options.Cookie.HttpOnly = true;
     options.Cookie.Expiration = null;
-    options.SlidingExpiration = false;
+    options.SlidingExpiration = true;
+});
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services.AddCors(options =>
@@ -52,7 +59,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.HttpOnly = true;
+    
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
     options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
     options.Cookie.Name = ".AspNetCore.Identity.Application"; // Đặt tên giống như Postman nhận được
@@ -69,7 +76,7 @@ var app = builder.Build();
 app.UseCors("AllowAngular");
 
 
-
+app.UseSession();
 
 if (app.Environment.IsDevelopment())
 {
