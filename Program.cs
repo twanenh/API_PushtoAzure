@@ -38,12 +38,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Expiration = null;
     options.SlidingExpiration = true;
 });
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
 
 builder.Services.AddCors(options =>
 {
@@ -76,7 +70,7 @@ var app = builder.Build();
 app.UseCors("AllowAngular");
 
 
-app.UseSession();
+
 
 if (app.Environment.IsDevelopment())
 {
