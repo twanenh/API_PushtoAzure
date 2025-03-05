@@ -43,12 +43,19 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular",
         policy =>
         {
-            policy.WithOrigins("https://tuanbeo.vercel.app")
-                  .WithOrigins("http://localhost:4200")
+            policy.WithOrigins("https://tuanbeo.vercel.app", "http://localhost:4200")
+                  
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
         });
+});
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Chỉ gửi cookie qua HTTPS
+    options.Cookie.SameSite = SameSiteMode.None; // Cho phép Angular gửi cookie từ domain khác
+    options.Cookie.Name = ".AspNetCore.Identity.Application"; // Đặt tên giống như Postman nhận được
 });
 
 var app = builder.Build();
