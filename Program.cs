@@ -25,6 +25,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
+builder.Services.AddDistributedMemoryCache(); // Hoặc AddDistributedSqlServerCache()
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(7); // Giữ session 7 ngày
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -77,6 +84,7 @@ if (app.Environment.IsDevelopment())
     });
     app.MapScalarApiReference();
 }
+app.UseSession();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
