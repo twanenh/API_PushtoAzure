@@ -37,16 +37,28 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.ExpireTimeSpan = TimeSpan.FromDays(7); // Cookie tồn tại 7 ngày
-    options.SlidingExpiration = true; // Gia hạn thời gian sống khi người dùng hoạt động
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
     options.LoginPath = "/api/auth/login";
     options.LogoutPath = "/api/auth/logout";
     options.AccessDeniedPath = "/api/auth/accessdenied";
 
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Bắt buộc HTTPS
-    options.Cookie.SameSite = SameSiteMode.None; // Cho phép gửi từ domain khác
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.Name = ".AspNetCore.Identity.Application";
+
+    // Thêm mới: Không tự động chuyển hướng API
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api") &&
+            context.Response.StatusCode == StatusCodes.Status200OK)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+        return Task.CompletedTask;
+    };
 });
 
 
@@ -56,7 +68,6 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("https://tuanbeo.vercel.app", "http://localhost:4200")
-                  
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();
@@ -91,11 +102,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.Use(async (context, next) =>
 {
-    if (!context.User.Identity.IsAuthenticated) // Nếu API không còn session
-    {
-        context.Response.Cookies.Delete(".AspNetCore.Identity.Application"); // Xóa cookie đăng nhập
-    }
     await next();
+    
+    // Chỉ xóa cookie nếu đây là yêu cầu đăng xuất rõ ràng
+    if (context.Request.Path.ToString().Contains("/auth/logout") && 
+        context.Response.StatusCode == 200)
+    {
+        context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+    }
 });
 app.MapControllers();
 // Áp dụng migrations khi khởi động

@@ -61,13 +61,9 @@ namespace API_PushtoAzure.Controllers
             return Ok(new { message = "Đăng xuất thành công" });
         }
         [HttpGet("check-login")]
-        public IActionResult CheckLogin()
+        public IActionResult CheckLoginStatus()
         {
-            if (User.Identity?.IsAuthenticated ?? false)
-            {
-                return Ok(new { isAuthenticated = true });
-            }
-            return Ok(new { isAuthenticated = false });
+            return Ok(new { isAuthenticated = User.Identity.IsAuthenticated });
         }
 
     }
