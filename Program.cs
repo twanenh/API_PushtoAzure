@@ -39,24 +39,37 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
-    options.LoginPath = "/api/auth/login";
-    options.LogoutPath = "/api/auth/logout";
-    options.AccessDeniedPath = "/api/auth/accessdenied";
-
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.None;
+
+    // Thay đổi SameSite từ None sang Lax (hoặc sử dụng None cho production với HTTPS)
+    options.Cookie.SameSite = SameSiteMode.Lax;
+
+    // Giữ nguyên tên cookie
     options.Cookie.Name = ".AspNetCore.Identity.Application";
 
-    // Thêm mới: Không tự động chuyển hướng API
+    // Cấu hình sự kiện chuyển hướng tốt hơn cho API
     options.Events.OnRedirectToLogin = context =>
     {
-        if (context.Request.Path.StartsWithSegments("/api") &&
-            context.Response.StatusCode == StatusCodes.Status200OK)
+        if (context.Request.Path.StartsWithSegments("/api"))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return Task.CompletedTask;
         }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
         return Task.CompletedTask;
     };
 });
@@ -100,31 +113,30 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+// Thêm middleware để log request và cookies
+// Thêm middleware để log request và cookies
 app.Use(async (context, next) =>
 {
-    await next();
-    
-    // Chỉ xóa cookie nếu đây là yêu cầu đăng xuất rõ ràng
-    if (context.Request.Path.ToString().Contains("/auth/logout") && 
-        context.Response.StatusCode == 200)
+    // Log request
+    var path = context.Request.Path;
+    var method = context.Request.Method;
+    var identity = context.User.Identity;
+    var isAuthenticated = identity?.IsAuthenticated ?? false;
+    Console.WriteLine($"Request: {method} {path}, Authenticated: {isAuthenticated}");
+
+    // Log cookies cho các route API
+    if (path.StartsWithSegments("/api"))
     {
-        context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+        var cookies = context.Request.Cookies;
+        Console.WriteLine($"Cookies: {string.Join(", ", cookies.Select(c => $"{c.Key}={c.Value}"))}");
     }
+
+    await next();
+
+    // Log response status
+    Console.WriteLine($"Response: {context.Response.StatusCode}");
 });
+
 app.MapControllers();
-// Áp dụng migrations khi khởi động
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        var context = services.GetRequiredService<AppDbContext>();
-//        context.Database.Migrate();
-//    }
-//    catch (Exception ex)
-//    {
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "Đã xảy ra lỗi khi migrate database.");
-//    }
-//}
+
 app.Run();
